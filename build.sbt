@@ -39,7 +39,4 @@ lazy val generation = (project in file("generation")).
     )
   )
 
-//lazy val upickle = "com.lihaoyi" %% "upickle" % "0.3.8"
-
-lazy val scalactic = "org.scalactic" %% "scalactic" % "3.0.0-M15"
 lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.0.0-M15" % "test"

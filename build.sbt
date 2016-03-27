@@ -2,7 +2,22 @@
 lazy val commonSettings = Seq(
   organization := "com.spotify4s",
   version := "0.1.0",
-  scalaVersion := "2.11.7"
+  scalaVersion := "2.11.7",
+  scalacOptions ++= Seq(
+    "-encoding", "UTF-8"
+    , "-feature" // Emit warning and location for usages of features that should be imported explicitly
+    , "-language:implicitConversions", "-language:higherKinds", "-language:existentials", "-language:postfixOps"
+    , "-Xfatal-warnings" // Fail the compilation if there are any warnings
+    , "-Xlint:_,-nullary-unit" // Enable or disable specific warnings (see list below)
+    , "-Ywarn-dead-code" // Warn when dead code is identified
+    , "-Ywarn-unused" // Warn when local and private vals, vars, defs, and types are are unused
+    , "-Ywarn-unused-import" // Warn when imports are unused
+    , "-deprecation"
+  ),
+  // Improved incremental compilation
+  incOptions := incOptions.value.withNameHashing(true),
+  // Improved dependency management
+  updateOptions := updateOptions.value.withCachedResolution(true)
 )
 
 
@@ -16,9 +31,7 @@ lazy val models = (project in file("models")).
   settings(commonSettings: _*).
   settings(
     name := "spotify4s-models",
-    libraryDependencies ++= Seq(
-      scalaTest
-    )
+    libraryDependencies ++= Seq(scalaTest) ++ circe
   )
 
 lazy val core = (project in file("core")).
@@ -38,5 +51,12 @@ lazy val generation = (project in file("generation")).
       "org.yaml" % "snakeyaml" % "1.16"
     )
   )
+
+lazy val circeVersion = "0.3.0"
+
+lazy val circe = Seq(
+  "io.circe" %% "circe-core" % circeVersion,
+  "io.circe" %% "circe-generic" % circeVersion,
+  "io.circe" %% "circe-parser" % circeVersion)
 
 lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.0.0-M15" % "test"

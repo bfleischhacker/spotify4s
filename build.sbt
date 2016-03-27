@@ -31,7 +31,7 @@ lazy val models = (project in file("models")).
   settings(commonSettings: _*).
   settings(
     name := "spotify4s-models",
-    libraryDependencies ++= Seq(scalaTest) ++ circe
+    libraryDependencies ++= Seq(scalaTest, cats) ++ circe
   )
 
 lazy val core = (project in file("core")).
@@ -58,5 +58,7 @@ lazy val circe = Seq(
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion)
+
+lazy val cats = "org.typelevel" %% "cats" % "0.4.0"
 
 lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.0.0-M15" % "test"

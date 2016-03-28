@@ -1,5 +1,7 @@
 package org.spotify4s.models
 
+import org.spotify4s.util.{Enumerated, Identifiable}
+
 
 /**
   * @param albumType        The type of the album: one of "album", "single", or "compilation".
@@ -12,13 +14,22 @@ package org.spotify4s.models
   * @param `type`
   * @param uri
   **/
-case class AlbumSimple(albumType: AlbumSimple.AlbumType, availableMarkets: List[String], externalUrls: ExternalUrl, href: String, id: SpotifyId, images: List[Image], name: String, `type`: String, uri: SpotifyUri)
+case class AlbumSimple(albumType: AlbumSimple.AlbumType,
+                       availableMarkets: List[String],
+                       externalUrls: ExternalUrl,
+                       href: String,
+                       id: SpotifyId,
+                       images: List[Image],
+                       name: String,
+                       `type`: String,
+                       uri: SpotifyUri)
 
 object AlbumSimple {
 
-  sealed abstract class AlbumType(val identifier: String)
+  sealed abstract class AlbumType(val identifier: String) extends Identifiable
 
-  object AlbumType {
+  object AlbumType extends Enumerated[AlbumType] {
+    override val all: Seq[AlbumType] = Seq(Album, Single, Compilation)
 
     object Album extends AlbumType("album")
 

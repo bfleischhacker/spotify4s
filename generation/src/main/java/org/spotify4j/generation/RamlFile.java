@@ -68,6 +68,7 @@ public class RamlFile {
         final String baseTypeName;
         final String description;
         Type type = null;
+        boolean isRequired = true;
 
         if (property.getKey() instanceof String && property.getValue() instanceof String) {
             typeName = (String) property.getValue();
@@ -87,6 +88,8 @@ public class RamlFile {
                 containing.getEnums().add(new ScalaEnum(enumName, values));
                 type = new ReferenceType(containing.getType().getName() + "." + enumName, packageName);
             }
+
+            isRequired = (boolean) propertyFields.getOrDefault("required", true);
         } else {
             return;
         }
@@ -103,7 +106,7 @@ public class RamlFile {
             type = ScalaTypes.List(type);
         }
 
-        if (description != null && description.contains("null")) {
+        if (!isRequired) {
             type = ScalaTypes.Option(type);
         }
 
@@ -143,6 +146,15 @@ public class RamlFile {
                                     clazz.getName(),
                                     valueField.getName())).collect(Collectors.toList()))
             );
+
+            Type encoderType = new GenericType("Encoder", "io.circe", clazz.getType());
+            Type decoderType = new GenericType("Decoder", "io.circe", clazz.getType());
+            clazz.getCompanionFields().add(new ScalaField(AccessModifier.PUBLIC, true, true, "encoder", encoderType)
+                    .withAssignment("Encoder.encodeString.contramap(_."+fieldName+")"));
+            clazz.getCompanionFields().add(new ScalaField(AccessModifier.PUBLIC, true, true, "decoder", decoderType)
+                    .withAssignment("Decoder.decodeString.emap(str => verified(str).fold[$(cats.data).Xor[String, "+getClassName()+"]](s\"invalid "+getClassName()+" format: $str doesn't match regex ${pattern.regex}\".left)(_.right))"));
+
+            clazz.getPackageImports().add("cats.syntax.xor._");
         }
     }
 

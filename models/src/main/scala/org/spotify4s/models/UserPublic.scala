@@ -11,5 +11,12 @@ package org.spotify4s.models
   * @param `type`      The object type: "user".
   * @param uri
   **/
-case class UserPublic(displayName: Option[String], externalUrls: ExternalUrl, followers: Followers, href: String, id: SpotifyUserId, images: List[Image], `type`: String, uri: SpotifyUri)
+case class UserPublic(displayName: Option[String],
+                      externalUrls: ExternalUrl,
+                      followers: Option[Followers],
+                      href: String,
+                      id: SpotifyUserId,
+                      images: Option[List[Image]],
+                      `type`: String,
+                      uri: SpotifyUri)
 

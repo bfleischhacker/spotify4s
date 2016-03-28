@@ -7,3 +7,4 @@ case class Page[T](href: String,
                    offset: Int,
                    next: Option[String],
                    previous: Option[String])
+

@@ -1,5 +1,7 @@
 package org.spotify4s.models
 
+import org.spotify4s.util.{Enumerated, Identifiable}
+
 
 /**
   * @param albumType            The type of the album: one of "album", "single", or "compilation".
@@ -20,13 +22,30 @@ package org.spotify4s.models
   * @param releaseDatePrecision The precision with which `release_date` value is known.
   * @param tracks               The tracks of the album.
   **/
-case class Album(albumType: AlbumSimple.AlbumType, availableMarkets: List[String], externalUrls: ExternalUrl, href: String, id: SpotifyId, images: List[Image], name: String, `type`: String, uri: SpotifyUri, artists: List[ArtistSimple], copyrights: List[Copyright], externalIds: ExternalId, genres: List[String], popularity: Int, releaseDate: String, releaseDatePrecision: Album.ReleaseDatePrecision, tracks: Page[TrackSimple])
+case class Album(albumType: AlbumSimple.AlbumType,
+                 availableMarkets: List[String],
+                 externalUrls: ExternalUrl,
+                 href: String,
+                 id: SpotifyId,
+                 images: List[Image],
+                 name: String,
+                 `type`: String,
+                 uri: SpotifyUri,
+                 artists: List[ArtistSimple],
+                 copyrights: List[Copyright],
+                 externalIds: ExternalId,
+                 genres: List[String],
+                 popularity: Int,
+                 releaseDate: String,
+                 releaseDatePrecision: Album.ReleaseDatePrecision,
+                 tracks: Page[TrackSimple])
 
 object Album {
 
-  sealed abstract class ReleaseDatePrecision(val identifier: String)
+  sealed abstract class ReleaseDatePrecision(val identifier: String) extends Identifiable
 
-  object ReleaseDatePrecision {
+  object ReleaseDatePrecision extends Enumerated[ReleaseDatePrecision] {
+    override val all: Seq[ReleaseDatePrecision] = Seq(Year, Month, Day)
 
     object Year extends ReleaseDatePrecision("year")
 

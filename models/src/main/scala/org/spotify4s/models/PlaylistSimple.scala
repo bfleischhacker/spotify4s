@@ -15,5 +15,16 @@ package org.spotify4s.models
   * @param `type`        The object type: "playlist"
   * @param uri
   **/
-case class PlaylistSimple(collaborative: Boolean, externalUrls: ExternalUrl, href: String, id: SpotifyId, images: List[Image], name: String, owner: UserPublic, public: Option[Boolean], snapshotId: String, tracks: Page[TrackSimple], `type`: String, uri: SpotifyUri)
+case class PlaylistSimple(collaborative: Boolean,
+                          externalUrls: ExternalUrl,
+                          href: String,
+                          id: SpotifyId,
+                          images: List[Image],
+                          name: String,
+                          owner: UserPublic,
+                          public: Boolean,
+                          snapshotId: String,
+                          tracks: PageReference,
+                          `type`: String,
+                          uri: SpotifyUri)
 

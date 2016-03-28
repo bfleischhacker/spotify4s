@@ -1,5 +1,9 @@
 package org.spotify4s.models
 
+import cats.data.Xor
+import cats.syntax.xor._
+import io.circe.{Decoder, Encoder}
+
 import scala.util.matching.Regex
 
 
@@ -14,7 +18,15 @@ import scala.util.matching.Regex
 case class SpotifyUri(spotifyUri: String)
 
 object SpotifyUri {
-  private val pattern: Regex = "^(spotify:)(track|album|artist):[a-zA-Z0-9]+$".r
+  private val pattern: Regex = "^(spotify:)(((track|album|artist|user):[a-zA-Z0-9\\-\\.\\_]+)|(user:[a-zA-Z0-9\\-\\.\\_]+:playlist:[a-zA-Z0-9\\-\\.\\_]+))$"
+    .r
+
+  implicit val encoder: Encoder[SpotifyUri] = Encoder.encodeString.contramap(_.spotifyUri)
+
+  implicit val decoder: Decoder[SpotifyUri] = Decoder.decodeString
+    .emap(str => verified(str)
+      .fold[Xor[String, SpotifyUri]](s"invalid SpotifyUri format: $str doesn't match regex ${pattern.regex}".left)(_
+      .right))
 
 
   def verified(spotifyUri: String): Option[SpotifyUri] = {

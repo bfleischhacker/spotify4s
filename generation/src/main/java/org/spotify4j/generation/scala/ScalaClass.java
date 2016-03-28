@@ -24,6 +24,7 @@ public class ScalaClass {
     private List<ScalaMethod> methods;
     private List<ScalaField> companionFields;
     private List<ScalaMethod> companionMethods;
+    private Set<String> packageImports;
 
     public ScalaClass(String name, String packageName) {
         this.name = name;
@@ -34,6 +35,7 @@ public class ScalaClass {
         this.companionFields = new ArrayList<>();
         this.companionMethods = new ArrayList<>();
         this.constructorAccessModifier = AccessModifier.PUBLIC;
+        this.packageImports = new HashSet<>();
     }
 
     public ReferenceType getType() {
@@ -72,6 +74,15 @@ public class ScalaClass {
                 .filter(t -> t != null && t.getPackage() != null && !t.getPackage().isEmpty())
                 .map(t -> String.format("%s.%s", t.getPackage(), t.getName()))
                 .forEach(packages::add);
+
+        if (!enums.isEmpty()) {
+            packageImports.add("org.spotify4s.util.Identifiable");
+            packageImports.add("org.spotify4s.util.Enumerated");
+        }
+
+        if (packageImports != null) {
+            packageImports.stream().forEach(packages::add);
+        }
 
         packages.remove("");
         return packages;
@@ -237,5 +248,9 @@ public class ScalaClass {
 
     public void setConstructorAccessModifier(AccessModifier constructorAccessModifier) {
         this.constructorAccessModifier = constructorAccessModifier;
+    }
+
+    public Set<String> getPackageImports() {
+        return packageImports;
     }
 }

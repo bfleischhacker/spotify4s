@@ -13,5 +13,14 @@ package org.spotify4s.models
   * @param images
   * @param popularity The popularity of the artist. The value will be between 0 and 100, with 100 being the most popular. The artist's popularity is calculated from the popularity of all the artist's tracks.
   **/
-case class Artist(externalUrls: ExternalUrl, href: String, id: SpotifyId, name: String, `type`: String, uri: SpotifyUri, followers: Followers, genres: List[String], images: List[Image], popularity: Int)
+case class Artist(externalUrls: ExternalUrl,
+                  href: String,
+                  id: SpotifyId,
+                  name: String,
+                  `type`: String,
+                  uri: SpotifyUri,
+                  followers: Followers,
+                  genres: List[String],
+                  images: List[Image],
+                  popularity: Int)
 

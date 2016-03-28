@@ -9,5 +9,10 @@ package org.spotify4s.models
   * @param `type` The object type: "artist"
   * @param uri
   **/
-case class ArtistSimple(externalUrls: ExternalUrl, href: String, id: SpotifyId, name: String, `type`: String, uri: SpotifyUri)
+case class ArtistSimple(externalUrls: ExternalUrl,
+                        href: String,
+                        id: SpotifyId,
+                        name: String,
+                        `type`: String,
+                        uri: SpotifyUri)
 

@@ -18,5 +18,19 @@ package org.spotify4s.models
   * @param `type`           The object type: "track".
   * @param uri
   **/
-case class TrackSimple(artists: List[ArtistSimple], availableMarkets: List[String], discNumber: Int, durationMs: Int, explicit: Boolean, externalUrls: ExternalUrl, href: String, id: SpotifyId, isPlayable: Boolean, linkedFrom: TrackLink, name: String, previewUrl: String, trackNumber: Int, `type`: String, uri: SpotifyUri)
+case class TrackSimple(artists: List[ArtistSimple],
+                       availableMarkets: List[String],
+                       discNumber: Int,
+                       durationMs: Int,
+                       explicit: Boolean,
+                       externalUrls: ExternalUrl,
+                       href: String,
+                       id: SpotifyId,
+                       isPlayable: Option[Boolean],
+                       linkedFrom: Option[TrackLink],
+                       name: String,
+                       previewUrl: String,
+                       trackNumber: Int,
+                       `type`: String,
+                       uri: SpotifyUri)
 

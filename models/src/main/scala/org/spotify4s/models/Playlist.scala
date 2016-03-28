@@ -17,5 +17,18 @@ package org.spotify4s.models
   * @param description   The playlist description. Only returned for modified, verified playlists, otherwise `null`.
   * @param followers     Information about the followers of the playlist.
   **/
-case class Playlist(collaborative: Boolean, externalUrls: ExternalUrl, href: String, id: SpotifyId, images: List[Image], name: String, owner: UserPublic, public: Option[Boolean], snapshotId: String, tracks: Page[TrackSimple], `type`: String, uri: SpotifyUri, description: Option[String], followers: Followers)
+case class Playlist(collaborative: Boolean,
+                    externalUrls: ExternalUrl,
+                    href: String,
+                    id: SpotifyId,
+                    images: List[Image],
+                    name: String,
+                    owner: UserPublic,
+                    public: Boolean,
+                    snapshotId: String,
+                    tracks: PageReference,
+                    `type`: String,
+                    uri: SpotifyUri,
+                    description: String,
+                    followers: Followers)
 

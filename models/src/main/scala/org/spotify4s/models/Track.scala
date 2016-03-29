@@ -1,5 +1,8 @@
 package org.spotify4s.models
 
+import cats.syntax.cartesian._
+import io.circe.{Decoder, Encoder, Json}
+
 
 /**
   * @param artists
@@ -40,3 +43,38 @@ case class Track(artists: List[ArtistSimple],
                  externalIds: ExternalId,
                  popularity: Int)
 
+object Track {
+  implicit val decoder: Decoder[Track] = (Decoder.instance(_.get[List[ArtistSimple]]("artists")) |@| Decoder
+    .instance(_.get[List[String]]("available_markets")) |@| Decoder.instance(_.get[Int]("disc_number")) |@| Decoder
+    .instance(_.get[Int]("duration_ms")) |@| Decoder.instance(_.get[Boolean]("explicit")) |@| Decoder
+    .instance(_.get[ExternalUrl]("external_urls")) |@| Decoder.instance(_.get[String]("href")) |@| Decoder
+    .instance(_.get[SpotifyId]("id")) |@| Decoder.instance(_.get[Option[Boolean]]("is_playable")) |@| Decoder
+    .instance(_.get[Option[TrackLink]]("linked_from")) |@| Decoder.instance(_.get[String]("name")) |@| Decoder
+    .instance(_.get[String]("preview_url")) |@| Decoder.instance(_.get[Int]("track_number")) |@| Decoder
+    .instance(_.get[String]("type")) |@| Decoder.instance(_.get[SpotifyUri]("uri")) |@| Decoder
+    .instance(_.get[AlbumSimple]("album")) |@| Decoder.instance(_.get[ExternalId]("external_ids")) |@| Decoder
+    .instance(_.get[Int]("popularity"))).map(Track.apply)
+
+  implicit val encoder: Encoder[Track] = Encoder
+    .instance(track => Json
+      .obj("artists" -> Encoder[List[ArtistSimple]].apply(track.artists),
+        "available_markets" -> Encoder[List[String]].apply(track.availableMarkets),
+        "disc_number" -> Encoder[Int].apply(track.discNumber),
+        "duration_ms" -> Encoder[Int].apply(track.durationMs),
+        "explicit" -> Encoder[Boolean].apply(track.explicit),
+        "external_urls" -> Encoder[ExternalUrl].apply(track.externalUrls),
+        "href" -> Encoder[String].apply(track.href),
+        "id" -> Encoder[SpotifyId].apply(track.id),
+        "is_playable" -> Encoder[Option[Boolean]].apply(track.isPlayable),
+        "linked_from" -> Encoder[Option[TrackLink]].apply(track.linkedFrom),
+        "name" -> Encoder[String].apply(track.name),
+        "preview_url" -> Encoder[String].apply(track.previewUrl),
+        "track_number" -> Encoder[Int].apply(track.trackNumber),
+        "type" -> Encoder[String].apply(track.`type`),
+        "uri" -> Encoder[SpotifyUri].apply(track.uri),
+        "album" -> Encoder[AlbumSimple].apply(track.album),
+        "external_ids" -> Encoder[ExternalId].apply(track.externalIds),
+        "popularity" -> Encoder[Int].apply(track.popularity)))
+
+
+}

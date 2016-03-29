@@ -150,12 +150,58 @@ public class RamlFile {
             Type encoderType = new GenericType("Encoder", "io.circe", clazz.getType());
             Type decoderType = new GenericType("Decoder", "io.circe", clazz.getType());
             clazz.getCompanionFields().add(new ScalaField(AccessModifier.PUBLIC, true, true, "encoder", encoderType)
-                    .withAssignment("Encoder.encodeString.contramap(_."+fieldName+")"));
+                    .withAssignment("Encoder.encodeString.contramap(_." + fieldName + ")"));
             clazz.getCompanionFields().add(new ScalaField(AccessModifier.PUBLIC, true, true, "decoder", decoderType)
-                    .withAssignment("Decoder.decodeString.emap(str => verified(str).fold[$(cats.data).Xor[String, "+getClassName()+"]](s\"invalid "+getClassName()+" format: $str doesn't match regex ${pattern.regex}\".left)(_.right))"));
+                    .withAssignment("Decoder.decodeString.emap(str => verified(str).fold[$(cats.data).Xor[String, " + getClassName() + "]](s\"invalid " + getClassName() + " format: $str doesn't match regex ${pattern.regex}\".left)(_.right))"));
 
             clazz.getPackageImports().add("cats.syntax.xor._");
         }
+    }
+
+    //
+    public static void generateDecoder(ScalaClass clazz) {
+        clazz.getPackageImports().add("cats.syntax.cartesian._");
+        clazz.getPackageImports().add("io.circe.Decoder");
+        clazz.getCompanionFields().add(new ScalaField(
+                AccessModifier.PUBLIC,
+                true,
+                true,
+                "decoder",
+                new GenericType("Decoder", "io.circe", clazz.getType())).
+                withAssignment(
+                        clazz.getVariables().stream().map(var ->
+                                "Decoder.instance(_.get[" + var.getType().getDeclaration() + "](\"" + Util.camelCaseToSnake(var.getName().replace("`","")) + "\"))"
+                        ).collect(Collectors.joining(" |@| \n", "(", ").map(" + clazz.getType().getDeclaration() + ".apply)")))
+        );
+    }
+
+    public static void generateEncoder(ScalaClass clazz) {
+        final String lowerClassClassName = clazz.getName().substring(0, 1).toLowerCase() + clazz.getName().substring(1);
+
+        clazz.getPackageImports().add("cats.syntax.cartesian._");
+        clazz.getPackageImports().add("io.circe.Encoder");
+
+        List<String> body = new ArrayList<>();
+        body.add("Encoder.instance(" + lowerClassClassName + " =>");
+        body.add("$(io.circe).Json.obj(");
+        body.add(clazz.getVariables().stream().map(scalaField ->
+            String.format("\"%s\" -> Encoder[%s].apply(%s.%s)",
+                    Util.camelCaseToSnake(scalaField.getName().replace("`", "")),
+                    scalaField.getType().getDeclaration(),
+                    lowerClassClassName,
+                    scalaField.getName()
+            )
+        ).collect(Collectors.joining(",")));
+        body.add("))");
+
+        clazz.getCompanionFields().add(new ScalaField(
+                AccessModifier.PUBLIC,
+                true,
+                true,
+                "encoder",
+                new GenericType("Encoder", "io.circe", clazz.getType())).
+                withAssignment(body.stream().collect(Collectors.joining("\n"))));
+
     }
 
     public Optional<String> getParentType() {
@@ -179,6 +225,8 @@ public class RamlFile {
             for (Map.Entry<Object, Object> prop : properties.entrySet()) {
                 parseProperty(packagePath, clazz, prop);
             }
+            generateDecoder(clazz);
+            generateEncoder(clazz);
         }
 
         clazz.withComment(new ScalaDocComment(description, clazz.getVariables().stream().collect(Collectors.toList())));

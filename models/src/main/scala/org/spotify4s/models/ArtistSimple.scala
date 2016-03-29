@@ -1,5 +1,8 @@
 package org.spotify4s.models
 
+import cats.syntax.cartesian._
+import io.circe.{Decoder, Encoder, Json}
+
 
 /**
   * @param externalUrls
@@ -16,3 +19,20 @@ case class ArtistSimple(externalUrls: ExternalUrl,
                         `type`: String,
                         uri: SpotifyUri)
 
+object ArtistSimple {
+  implicit val decoder: Decoder[ArtistSimple] = (Decoder.instance(_.get[ExternalUrl]("external_urls")) |@| Decoder
+    .instance(_.get[String]("href")) |@| Decoder.instance(_.get[SpotifyId]("id")) |@| Decoder
+    .instance(_.get[String]("name")) |@| Decoder.instance(_.get[String]("type")) |@| Decoder
+    .instance(_.get[SpotifyUri]("uri"))).map(ArtistSimple.apply)
+
+  implicit val encoder: Encoder[ArtistSimple] = Encoder
+    .instance(artistSimple => Json
+      .obj("external_urls" -> Encoder[ExternalUrl].apply(artistSimple.externalUrls),
+        "href" -> Encoder[String].apply(artistSimple.href),
+        "id" -> Encoder[SpotifyId].apply(artistSimple.id),
+        "name" -> Encoder[String].apply(artistSimple.name),
+        "type" -> Encoder[String].apply(artistSimple.`type`),
+        "uri" -> Encoder[SpotifyUri].apply(artistSimple.uri)))
+
+
+}

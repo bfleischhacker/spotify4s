@@ -1,5 +1,7 @@
 package org.spotify4s.models
 
+import cats.syntax.cartesian._
+import io.circe.{Decoder, Encoder, Json}
 import org.spotify4s.util.{Enumerated, Identifiable}
 
 
@@ -25,6 +27,25 @@ case class AlbumSimple(albumType: AlbumSimple.AlbumType,
                        uri: SpotifyUri)
 
 object AlbumSimple {
+  implicit val decoder: Decoder[AlbumSimple] = (Decoder.instance(_.get[AlbumSimple.AlbumType]("album_type")) |@| Decoder
+    .instance(_.get[List[String]]("available_markets")) |@| Decoder
+    .instance(_.get[ExternalUrl]("external_urls")) |@| Decoder.instance(_.get[String]("href")) |@| Decoder
+    .instance(_.get[SpotifyId]("id")) |@| Decoder.instance(_.get[List[Image]]("images")) |@| Decoder
+    .instance(_.get[String]("name")) |@| Decoder.instance(_.get[String]("type")) |@| Decoder
+    .instance(_.get[SpotifyUri]("uri"))).map(AlbumSimple.apply)
+
+  implicit val encoder: Encoder[AlbumSimple] = Encoder
+    .instance(albumSimple => Json
+      .obj("album_type" -> Encoder[AlbumSimple.AlbumType].apply(albumSimple.albumType),
+        "available_markets" -> Encoder[List[String]].apply(albumSimple.availableMarkets),
+        "external_urls" -> Encoder[ExternalUrl].apply(albumSimple.externalUrls),
+        "href" -> Encoder[String].apply(albumSimple.href),
+        "id" -> Encoder[SpotifyId].apply(albumSimple.id),
+        "images" -> Encoder[List[Image]].apply(albumSimple.images),
+        "name" -> Encoder[String].apply(albumSimple.name),
+        "type" -> Encoder[String].apply(albumSimple.`type`),
+        "uri" -> Encoder[SpotifyUri].apply(albumSimple.uri)))
+
 
   sealed abstract class AlbumType(val identifier: String) extends Identifiable
 

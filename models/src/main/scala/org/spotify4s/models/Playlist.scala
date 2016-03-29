@@ -1,5 +1,8 @@
 package org.spotify4s.models
 
+import cats.syntax.cartesian._
+import io.circe.{Decoder, Encoder, Json}
+
 
 /**
   * @param collaborative `true` if the owner allows other users to modify the playlist.
@@ -32,3 +35,32 @@ case class Playlist(collaborative: Boolean,
                     description: String,
                     followers: Followers)
 
+object Playlist {
+  implicit val decoder: Decoder[Playlist] = (Decoder.instance(_.get[Boolean]("collaborative")) |@| Decoder
+    .instance(_.get[ExternalUrl]("external_urls")) |@| Decoder.instance(_.get[String]("href")) |@| Decoder
+    .instance(_.get[SpotifyId]("id")) |@| Decoder.instance(_.get[List[Image]]("images")) |@| Decoder
+    .instance(_.get[String]("name")) |@| Decoder.instance(_.get[UserPublic]("owner")) |@| Decoder
+    .instance(_.get[Boolean]("public")) |@| Decoder.instance(_.get[String]("snapshot_id")) |@| Decoder
+    .instance(_.get[PageReference]("tracks")) |@| Decoder.instance(_.get[String]("type")) |@| Decoder
+    .instance(_.get[SpotifyUri]("uri")) |@| Decoder.instance(_.get[String]("description")) |@| Decoder
+    .instance(_.get[Followers]("followers"))).map(Playlist.apply)
+
+  implicit val encoder: Encoder[Playlist] = Encoder
+    .instance(playlist => Json
+      .obj("collaborative" -> Encoder[Boolean].apply(playlist.collaborative),
+        "external_urls" -> Encoder[ExternalUrl].apply(playlist.externalUrls),
+        "href" -> Encoder[String].apply(playlist.href),
+        "id" -> Encoder[SpotifyId].apply(playlist.id),
+        "images" -> Encoder[List[Image]].apply(playlist.images),
+        "name" -> Encoder[String].apply(playlist.name),
+        "owner" -> Encoder[UserPublic].apply(playlist.owner),
+        "public" -> Encoder[Boolean].apply(playlist.public),
+        "snapshot_id" -> Encoder[String].apply(playlist.snapshotId),
+        "tracks" -> Encoder[PageReference].apply(playlist.tracks),
+        "type" -> Encoder[String].apply(playlist.`type`),
+        "uri" -> Encoder[SpotifyUri].apply(playlist.uri),
+        "description" -> Encoder[String].apply(playlist.description),
+        "followers" -> Encoder[Followers].apply(playlist.followers)))
+
+
+}

@@ -1,5 +1,8 @@
 package org.spotify4s.models
 
+import cats.syntax.cartesian._
+import io.circe.{Decoder, Encoder, Json}
+
 
 /**
   * @param collaborative `true` if the owner allows other users to modify the playlist.
@@ -28,3 +31,29 @@ case class PlaylistSimple(collaborative: Boolean,
                           `type`: String,
                           uri: SpotifyUri)
 
+object PlaylistSimple {
+  implicit val decoder: Decoder[PlaylistSimple] = (Decoder.instance(_.get[Boolean]("collaborative")) |@| Decoder
+    .instance(_.get[ExternalUrl]("external_urls")) |@| Decoder.instance(_.get[String]("href")) |@| Decoder
+    .instance(_.get[SpotifyId]("id")) |@| Decoder.instance(_.get[List[Image]]("images")) |@| Decoder
+    .instance(_.get[String]("name")) |@| Decoder.instance(_.get[UserPublic]("owner")) |@| Decoder
+    .instance(_.get[Boolean]("public")) |@| Decoder.instance(_.get[String]("snapshot_id")) |@| Decoder
+    .instance(_.get[PageReference]("tracks")) |@| Decoder.instance(_.get[String]("type")) |@| Decoder
+    .instance(_.get[SpotifyUri]("uri"))).map(PlaylistSimple.apply)
+
+  implicit val encoder: Encoder[PlaylistSimple] = Encoder
+    .instance(playlistSimple => Json
+      .obj("collaborative" -> Encoder[Boolean].apply(playlistSimple.collaborative),
+        "external_urls" -> Encoder[ExternalUrl].apply(playlistSimple.externalUrls),
+        "href" -> Encoder[String].apply(playlistSimple.href),
+        "id" -> Encoder[SpotifyId].apply(playlistSimple.id),
+        "images" -> Encoder[List[Image]].apply(playlistSimple.images),
+        "name" -> Encoder[String].apply(playlistSimple.name),
+        "owner" -> Encoder[UserPublic].apply(playlistSimple.owner),
+        "public" -> Encoder[Boolean].apply(playlistSimple.public),
+        "snapshot_id" -> Encoder[String].apply(playlistSimple.snapshotId),
+        "tracks" -> Encoder[PageReference].apply(playlistSimple.tracks),
+        "type" -> Encoder[String].apply(playlistSimple.`type`),
+        "uri" -> Encoder[SpotifyUri].apply(playlistSimple.uri)))
+
+
+}

@@ -1,5 +1,8 @@
 package org.spotify4s.models
 
+import cats.syntax.cartesian._
+import io.circe.{Decoder, Encoder, Json}
+
 
 /**
   * Information about the followers of an item.
@@ -9,3 +12,13 @@ package org.spotify4s.models
   **/
 case class Followers(href: String, total: Int)
 
+object Followers {
+  implicit val decoder: Decoder[Followers] = (Decoder.instance(_.get[String]("href")) |@| Decoder
+    .instance(_.get[Int]("total"))).map(Followers.apply)
+
+  implicit val encoder: Encoder[Followers] = Encoder
+    .instance(followers => Json
+      .obj("href" -> Encoder[String].apply(followers.href), "total" -> Encoder[Int].apply(followers.total)))
+
+
+}

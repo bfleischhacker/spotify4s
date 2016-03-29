@@ -1,5 +1,7 @@
 package org.spotify4s.models
 
+import cats.syntax.cartesian._
+import io.circe.{Decoder, Encoder, Json}
 import org.spotify4s.util.{Enumerated, Identifiable}
 
 
@@ -31,6 +33,30 @@ case class UserPrivate(displayName: Option[String],
                        product: UserPrivate.Product)
 
 object UserPrivate {
+  implicit val decoder: Decoder[UserPrivate] = (Decoder.instance(_.get[Option[String]]("display_name")) |@| Decoder
+    .instance(_.get[ExternalUrl]("external_urls")) |@| Decoder
+    .instance(_.get[Option[Followers]]("followers")) |@| Decoder.instance(_.get[String]("href")) |@| Decoder
+    .instance(_.get[SpotifyUserId]("id")) |@| Decoder.instance(_.get[Option[List[Image]]]("images")) |@| Decoder
+    .instance(_.get[String]("type")) |@| Decoder.instance(_.get[SpotifyUri]("uri")) |@| Decoder
+    .instance(_.get[String]("birthday")) |@| Decoder.instance(_.get[String]("country")) |@| Decoder
+    .instance(_.get[String]("email")) |@| Decoder.instance(_.get[UserPrivate.Product]("product")))
+    .map(UserPrivate.apply)
+
+  implicit val encoder: Encoder[UserPrivate] = Encoder
+    .instance(userPrivate => Json
+      .obj("display_name" -> Encoder[Option[String]].apply(userPrivate.displayName),
+        "external_urls" -> Encoder[ExternalUrl].apply(userPrivate.externalUrls),
+        "followers" -> Encoder[Option[Followers]].apply(userPrivate.followers),
+        "href" -> Encoder[String].apply(userPrivate.href),
+        "id" -> Encoder[SpotifyUserId].apply(userPrivate.id),
+        "images" -> Encoder[Option[List[Image]]].apply(userPrivate.images),
+        "type" -> Encoder[String].apply(userPrivate.`type`),
+        "uri" -> Encoder[SpotifyUri].apply(userPrivate.uri),
+        "birthday" -> Encoder[String].apply(userPrivate.birthday),
+        "country" -> Encoder[String].apply(userPrivate.country),
+        "email" -> Encoder[String].apply(userPrivate.email),
+        "product" -> Encoder[UserPrivate.Product].apply(userPrivate.product)))
+
 
   sealed abstract class Product(val identifier: String) extends Identifiable
 

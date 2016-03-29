@@ -1,6 +1,9 @@
 package org.spotify4j.generation;
 
+import org.spotify4j.generation.scala.AccessModifier;
 import org.spotify4j.generation.scala.ScalaClass;
+import org.spotify4j.generation.scala.ScalaField;
+import org.spotify4j.generation.scala.types.ScalaTypes;
 import org.spotify4j.generation.writing.BasicLineWriter;
 import org.spotify4j.generation.writing.LineWriter;
 
@@ -20,8 +23,9 @@ import java.util.stream.Stream;
 
 public class Main {
 
+    static final String packagePath = "org.spotify4s.models";
+
     public static void main(String[] args) throws URISyntaxException, IOException {
-        String packagePath = "org.spotify4s.models";
         final Path objectModelsRoot = Paths.get(Main.class.getClassLoader().getResource("").toURI().resolve("../../../../spotify-web-api/specifications/raml/libraries/objectModels"));
         final Path typesRoot = Paths.get(Main.class.getClassLoader().getResource("").toURI().resolve("../../../../spotify-web-api/specifications/raml/types"));
         final Path output = Paths.get(Main.class.getClassLoader().getResource("").toURI().resolve("../../../../models/src/main/scala/org/spotify4s/models"));
@@ -43,7 +47,11 @@ public class Main {
 
 
         //Process parent classes first
+
         final HashMap<String, ScalaClass> classPath = new HashMap<>();
+        classPath.put("ExternalId", generateExternalIdClass());
+        classPath.put("ExternalUrl", generateExternalUrlClass());
+
         Queue<RamlFile> ramlQueue = new LinkedBlockingQueue<>(ramlFiles);
         while (!ramlQueue.isEmpty()) {
             final RamlFile next = ramlQueue.remove();
@@ -52,13 +60,45 @@ public class Main {
                 final ScalaClass scalaClass = next
                         .withPropertyNameOverride("type", "`type`")
                         .toClass(packagePath, classPath);
-                LineWriter out = new BasicLineWriter(Files.newOutputStream(output.resolve(scalaClass.getName() + ".scala")));
-                scalaClass.write(out);
+
                 classPath.put(scalaClass.getName(), scalaClass);
             } else {
                 ramlQueue.add(next);
                 System.out.println("skipping " + next.fileName + " for now");
             }
+
         }
+        for (ScalaClass scalaClass : classPath.values()) {
+            LineWriter out = new BasicLineWriter(Files.newOutputStream(output.resolve(scalaClass.getName() + ".scala")));
+            scalaClass.write(out);
+        }
+
     }
+
+    static ScalaClass generateExternalIdClass() {
+        ScalaClass externalId = new ScalaClass("ExternalId", packagePath);
+
+        externalId.getVariables().addAll(Stream.of("isrc", "ean", "upc").map(id ->
+                new ScalaField(AccessModifier.PUBLIC, true, false, id, ScalaTypes.Option(ScalaTypes.String))
+        ).collect(Collectors.toList()));
+
+        RamlFile.generateDecoder(externalId);
+        RamlFile.generateEncoder(externalId);
+
+        return externalId;
+    }
+
+    static ScalaClass generateExternalUrlClass() {
+        ScalaClass externalUrl = new ScalaClass("ExternalUrl", packagePath);
+
+        externalUrl.getVariables().addAll(Stream.of("spotify").map(id ->
+                new ScalaField(AccessModifier.PUBLIC, true, false, id, ScalaTypes.Option(ScalaTypes.String))
+        ).collect(Collectors.toList()));
+
+        RamlFile.generateDecoder(externalUrl);
+        RamlFile.generateEncoder(externalUrl);
+
+        return externalUrl;
+    }
+
 }

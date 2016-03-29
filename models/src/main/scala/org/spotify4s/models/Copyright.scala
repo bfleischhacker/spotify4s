@@ -1,5 +1,7 @@
 package org.spotify4s.models
 
+import cats.syntax.cartesian._
+import io.circe.{Decoder, Encoder, Json}
 import org.spotify4s.util.{Enumerated, Identifiable}
 
 
@@ -10,6 +12,13 @@ import org.spotify4s.util.{Enumerated, Identifiable}
 case class Copyright(text: String, `type`: Copyright.Type)
 
 object Copyright {
+  implicit val decoder: Decoder[Copyright] = (Decoder.instance(_.get[String]("text")) |@| Decoder
+    .instance(_.get[Copyright.Type]("type"))).map(Copyright.apply)
+
+  implicit val encoder: Encoder[Copyright] = Encoder
+    .instance(copyright => Json
+      .obj("text" -> Encoder[String].apply(copyright.text), "type" -> Encoder[Copyright.Type].apply(copyright.`type`)))
+
 
   sealed abstract class Type(val identifier: String) extends Identifiable
 

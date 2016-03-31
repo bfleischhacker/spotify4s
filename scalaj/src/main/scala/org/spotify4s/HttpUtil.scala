@@ -1,7 +1,7 @@
 package org.spotify4s
 
 import cats.syntax.xor._
-import io.circe.Decoder
+import io.circe.{Decoder, Json}
 
 import scalaj.http.{HttpRequest, HttpResponse}
 
@@ -11,7 +11,12 @@ object HttpUtil {
     val response: HttpResponse[String] = request.asString
 
     if (response.is2xx) {
-      io.circe.parser.decode[T](response.body).leftMap(SpotifyError.JsonDecodeError(_, response.body)).toEither
+      if (response.body.isEmpty) {
+        Json.Empty.as[T].leftMap(SpotifyError.JsonDecodeError(_, response.body)).toEither
+      }
+      else {
+        io.circe.parser.decode[T](response.body).leftMap(SpotifyError.JsonDecodeError(_, response.body)).toEither
+      }
     } else {
       io.circe.parser.decode[org.spotify4s.models.ErrorObject](response.body)
         .map(_.error)

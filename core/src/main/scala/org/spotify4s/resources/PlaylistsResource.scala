@@ -40,6 +40,9 @@ trait PlaylistsResource {
     def createPlaylist(userId: String,
                        name: String,
                        isPublic: Option[Boolean] = None): Future[Either[SpotifyError, Playlist]]
+
+
+    def replacePlaylistTracks(userId: String, playlistId: String, trackUris: List[String]): Future[Either[SpotifyError, Unit]]
   }
 
 }

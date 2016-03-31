@@ -48,6 +48,15 @@ trait PlaylistsResourceImpl extends PlaylistsResource {
         headers = Map("Content-Type" -> "application/json"),
         body = body)
     }
+
+    override def replacePlaylistTracks(userId: String,
+                                       playlistId: String,
+                                       trackIds: List[String]): Future[Either[SpotifyError, Unit]] = {
+      val body = Json.obj("uris" -> Json.array(trackIds.map(trackId => Json.string(s"spotify:track:$trackId")): _*))
+      api.put[Unit](s"/v1/users/$userId/playlists/$playlistId/tracks",
+        headers = Map("Content-Type" -> "application/json"),
+        body = body)
+    }
   }
 
 }

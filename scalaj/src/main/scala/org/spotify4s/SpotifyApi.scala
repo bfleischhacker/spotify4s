@@ -29,12 +29,11 @@ case class SpotifyApi(accessToken: String)
                                  params: Map[String, String],
                                  headers: Map[String, String],
                                  body: Json): Future[Either[SpotifyError, T]] = {
-      val base = Http(s"$ApiHost$path")
-        .method("PUT")
+      execute(Http(s"$ApiHost$path")
         .params(params)
         .headers(headers)
-      val withBody = body.asString.fold(base)(base.postData)
-      execute(withBody)
+        .postData(body.toString())
+        .method("PUT"))
     }
 
     override def delete[T: Decoder](path: String,
@@ -50,12 +49,10 @@ case class SpotifyApi(accessToken: String)
                                   params: Map[String, String],
                                   headers: Map[String, String],
                                   body: Json): Future[Either[SpotifyError, T]] = {
-      val base = Http(s"$ApiHost$path")
-        .method("POST")
+      execute(Http(s"$ApiHost$path")
         .params(params)
         .headers(headers)
-      val withBody = body.asString.fold(base)(base.postData)
-      execute(withBody)
+        .postData(body.toString()))
     }
   }
 

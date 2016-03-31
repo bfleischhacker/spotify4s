@@ -17,16 +17,16 @@ trait PlaylistsResource {
       * @param market     optional 2 character ISO 3166-1 country code, to allow [[https://developer.spotify.com/web-api/track-relinking-guide/ track relinking]]
       * @return
       */
-    def getPlaylist(userId: SpotifyUserId,
-                    playlistId: SpotifyId,
+    def getPlaylist(userId: String,
+                    playlistId: String,
                     market: Option[String] = None): Future[Either[SpotifyError, PlaylistSimple]]
 
-    def getPlaylists(userId: SpotifyUserId,
+    def getPlaylists(userId: String,
                      limit: Option[Int] = None,
                      offset: Option[Int] = None): Future[Either[SpotifyError, Page[PlaylistSimple]]]
 
-    def getPlaylistTracks(userId: SpotifyUserId,
-                          playlistId: SpotifyId,
+    def getPlaylistTracks(userId: String,
+                          playlistId: String,
                           market: Option[String] = None,
                           limit: Option[Int] = None,
                           offset: Option[Int] = None): Future[Either[SpotifyError, Page[PlaylistTrack]]]

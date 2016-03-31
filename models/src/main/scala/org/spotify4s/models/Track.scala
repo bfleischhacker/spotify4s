@@ -35,7 +35,7 @@ case class Track(artists: List[ArtistSimple],
                  isPlayable: Option[Boolean],
                  linkedFrom: Option[TrackLink],
                  name: String,
-                 previewUrl: String,
+                 previewUrl: Option[String],
                  trackNumber: Int,
                  `type`: String,
                  uri: SpotifyUri,
@@ -50,7 +50,7 @@ object Track {
     .instance(_.get[ExternalUrl]("external_urls")) |@| Decoder.instance(_.get[String]("href")) |@| Decoder
     .instance(_.get[SpotifyId]("id")) |@| Decoder.instance(_.get[Option[Boolean]]("is_playable")) |@| Decoder
     .instance(_.get[Option[TrackLink]]("linked_from")) |@| Decoder.instance(_.get[String]("name")) |@| Decoder
-    .instance(_.get[String]("preview_url")) |@| Decoder.instance(_.get[Int]("track_number")) |@| Decoder
+    .instance(_.get[Option[String]]("preview_url")) |@| Decoder.instance(_.get[Int]("track_number")) |@| Decoder
     .instance(_.get[String]("type")) |@| Decoder.instance(_.get[SpotifyUri]("uri")) |@| Decoder
     .instance(_.get[AlbumSimple]("album")) |@| Decoder.instance(_.get[ExternalId]("external_ids")) |@| Decoder
     .instance(_.get[Int]("popularity"))).map(Track.apply)
@@ -68,7 +68,7 @@ object Track {
         "is_playable" -> Encoder[Option[Boolean]].apply(track.isPlayable),
         "linked_from" -> Encoder[Option[TrackLink]].apply(track.linkedFrom),
         "name" -> Encoder[String].apply(track.name),
-        "preview_url" -> Encoder[String].apply(track.previewUrl),
+        "preview_url" -> Encoder[Option[String]].apply(track.previewUrl),
         "track_number" -> Encoder[Int].apply(track.trackNumber),
         "type" -> Encoder[String].apply(track.`type`),
         "uri" -> Encoder[SpotifyUri].apply(track.uri),

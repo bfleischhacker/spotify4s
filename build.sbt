@@ -38,10 +38,8 @@ lazy val core = (project in file("core")).
   settings(commonSettings: _*).
   settings(
     name := "spotify4s-core",
-    libraryDependencies ++= Seq(
-      scalaTest
-    )
-  )
+    libraryDependencies ++= Seq(scalaTest) ++ circe
+  ).dependsOn(models)
 
 lazy val generation = (project in file("generation")).
   settings(commonSettings: _*).

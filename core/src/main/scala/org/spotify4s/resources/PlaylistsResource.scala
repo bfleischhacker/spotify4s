@@ -30,6 +30,16 @@ trait PlaylistsResource {
                           market: Option[String] = None,
                           limit: Option[Int] = None,
                           offset: Option[Int] = None): Future[Either[SpotifyError, Page[PlaylistTrack]]]
+
+    /**
+      * @param userId The user's [[SpotifyUserId]]
+      * @param name The name for the new playlist, for example "Your Coolest Playlist". This name does not need to be unique; a user may have several playlists with the same name.
+      * @param isPublic Optional (default true). If true the playlist will be public, if false it will be private. To be able to create private playlists, the user must have granted the playlist-modify-private scope.
+      * @return
+      */
+    def createPlaylist(userId: String,
+                       name: String,
+                       isPublic: Option[Boolean] = None): Future[Either[SpotifyError, Playlist]]
   }
 
 }

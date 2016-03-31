@@ -1,5 +1,7 @@
 package org.spotify4s.resources
 
+import io.circe.Json
+import io.circe.syntax._
 import org.spotify4s.SpotifyError
 import org.spotify4s.models._
 
@@ -36,6 +38,15 @@ trait PlaylistsResourceImpl extends PlaylistsResource {
 
       api.get[Page[PlaylistTrack]](s"/v1/users/$userId/playlists/$playlistId/tracks",
         params)
+    }
+
+    override def createPlaylist(userId: String,
+                                name: String,
+                                isPublic: Option[Boolean]): Future[Either[SpotifyError, Playlist]] = {
+      val body = Json.obj(List(Some("name" -> name.asJson), isPublic.map("public" -> _.asJson)).flatten: _*)
+      api.post[Playlist](s"/v1/users/$userId/playlists",
+        headers = Map("Content-Type" -> "application/json"),
+        body = body)
     }
   }
 

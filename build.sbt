@@ -41,6 +41,13 @@ lazy val core = (project in file("core")).
     libraryDependencies ++= Seq(scalaTest) ++ circe
   ).dependsOn(models)
 
+lazy val coreScalaj = (project in file("scalaj")).
+  settings(commonSettings: _*).
+  settings(
+    name := "spotify4s-scalaj",
+    libraryDependencies ++= Seq(scalaTest, cats, scalaj) ++ circe
+  ).dependsOn(models, core)
+
 lazy val generation = (project in file("generation")).
   settings(commonSettings: _*).
   settings(
@@ -60,3 +67,5 @@ lazy val circe = Seq(
 lazy val cats = "org.typelevel" %% "cats" % "0.4.0"
 
 lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.0.0-M15" % "test"
+
+lazy val scalaj = "org.scalaj" %% "scalaj-http" % "2.2.1"

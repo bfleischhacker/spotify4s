@@ -1,13 +1,14 @@
 package org.spotify4s
 
 import io.circe.{Decoder, Json}
-import org.spotify4s.resources.{AbstractApiResource, PlaylistsResourceImpl}
+import org.spotify4s.resources.{AbstractApiResource, PlaylistsResourceImpl, SearchResourceImpl}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scalaj.http.{Http, HttpRequest}
 
 case class SpotifyApi(accessToken: String)
-                     (implicit executionContext: ExecutionContext) extends AbstractApiResource with PlaylistsResourceImpl {
+                     (implicit executionContext: ExecutionContext) extends AbstractApiResource
+  with PlaylistsResourceImpl with SearchResourceImpl {
 
   override protected val api: Api = new Api {
     private val ApiHost = "https://api.spotify.com"
@@ -55,5 +56,6 @@ case class SpotifyApi(accessToken: String)
         .postData(body.toString()))
     }
   }
+
 
 }

@@ -7,7 +7,7 @@ import org.spotify4s.resources.AbstractAccountResource
 import scala.concurrent.{ExecutionContext, Future}
 import scalaj.http.{Http, HttpRequest}
 
-class SpotifyAccounts(clientId: String,
+case class SpotifyAccounts(clientId: String,
                       clientSecret: String)
                      (implicit executionContext: ExecutionContext) extends AbstractAccountResource {
   override val accounts: Accounts = new Accounts {

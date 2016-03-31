@@ -18,17 +18,17 @@ case class UserPublic(displayName: Option[String],
                       externalUrls: ExternalUrl,
                       followers: Option[Followers],
                       href: String,
-                      id: SpotifyUserId,
+                      id: String,
                       images: Option[List[Image]],
                       `type`: String,
-                      uri: SpotifyUri)
+                      uri: String)
 
 object UserPublic {
   implicit val decoder: Decoder[UserPublic] = (Decoder.instance(_.get[Option[String]]("display_name")) |@| Decoder
     .instance(_.get[ExternalUrl]("external_urls")) |@| Decoder
     .instance(_.get[Option[Followers]]("followers")) |@| Decoder.instance(_.get[String]("href")) |@| Decoder
-    .instance(_.get[SpotifyUserId]("id")) |@| Decoder.instance(_.get[Option[List[Image]]]("images")) |@| Decoder
-    .instance(_.get[String]("type")) |@| Decoder.instance(_.get[SpotifyUri]("uri"))).map(UserPublic.apply)
+    .instance(_.get[String]("id")) |@| Decoder.instance(_.get[Option[List[Image]]]("images")) |@| Decoder
+    .instance(_.get[String]("type")) |@| Decoder.instance(_.get[String]("uri"))).map(UserPublic.apply)
 
   implicit val encoder: Encoder[UserPublic] = Encoder
     .instance(userPublic => Json
@@ -36,10 +36,10 @@ object UserPublic {
         "external_urls" -> Encoder[ExternalUrl].apply(userPublic.externalUrls),
         "followers" -> Encoder[Option[Followers]].apply(userPublic.followers),
         "href" -> Encoder[String].apply(userPublic.href),
-        "id" -> Encoder[SpotifyUserId].apply(userPublic.id),
+        "id" -> Encoder[String].apply(userPublic.id),
         "images" -> Encoder[Option[List[Image]]].apply(userPublic.images),
         "type" -> Encoder[String].apply(userPublic.`type`),
-        "uri" -> Encoder[SpotifyUri].apply(userPublic.uri)))
+        "uri" -> Encoder[String].apply(userPublic.uri)))
 
 
 }

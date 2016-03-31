@@ -28,11 +28,11 @@ case class Album(albumType: AlbumSimple.AlbumType,
                  availableMarkets: List[String],
                  externalUrls: ExternalUrl,
                  href: String,
-                 id: SpotifyId,
+                 id: String,
                  images: List[Image],
                  name: String,
                  `type`: String,
-                 uri: SpotifyUri,
+                 uri: String,
                  artists: List[ArtistSimple],
                  copyrights: List[Copyright],
                  externalIds: ExternalId,
@@ -46,9 +46,9 @@ object Album {
   implicit val decoder: Decoder[Album] = (Decoder.instance(_.get[AlbumSimple.AlbumType]("album_type")) |@| Decoder
     .instance(_.get[List[String]]("available_markets")) |@| Decoder
     .instance(_.get[ExternalUrl]("external_urls")) |@| Decoder.instance(_.get[String]("href")) |@| Decoder
-    .instance(_.get[SpotifyId]("id")) |@| Decoder.instance(_.get[List[Image]]("images")) |@| Decoder
+    .instance(_.get[String]("id")) |@| Decoder.instance(_.get[List[Image]]("images")) |@| Decoder
     .instance(_.get[String]("name")) |@| Decoder.instance(_.get[String]("type")) |@| Decoder
-    .instance(_.get[SpotifyUri]("uri")) |@| Decoder.instance(_.get[List[ArtistSimple]]("artists")) |@| Decoder
+    .instance(_.get[String]("uri")) |@| Decoder.instance(_.get[List[ArtistSimple]]("artists")) |@| Decoder
     .instance(_.get[List[Copyright]]("copyrights")) |@| Decoder.instance(_.get[ExternalId]("external_ids")) |@| Decoder
     .instance(_.get[List[String]]("genres")) |@| Decoder.instance(_.get[Int]("popularity")) |@| Decoder
     .instance(_.get[String]("release_date")) |@| Decoder
@@ -61,11 +61,11 @@ object Album {
         "available_markets" -> Encoder[List[String]].apply(album.availableMarkets),
         "external_urls" -> Encoder[ExternalUrl].apply(album.externalUrls),
         "href" -> Encoder[String].apply(album.href),
-        "id" -> Encoder[SpotifyId].apply(album.id),
+        "id" -> Encoder[String].apply(album.id),
         "images" -> Encoder[List[Image]].apply(album.images),
         "name" -> Encoder[String].apply(album.name),
         "type" -> Encoder[String].apply(album.`type`),
-        "uri" -> Encoder[SpotifyUri].apply(album.uri),
+        "uri" -> Encoder[String].apply(album.uri),
         "artists" -> Encoder[List[ArtistSimple]].apply(album.artists),
         "copyrights" -> Encoder[List[Copyright]].apply(album.copyrights),
         "external_ids" -> Encoder[ExternalId].apply(album.externalIds),

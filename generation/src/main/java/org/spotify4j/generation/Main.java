@@ -3,6 +3,7 @@ package org.spotify4j.generation;
 import org.spotify4j.generation.scala.AccessModifier;
 import org.spotify4j.generation.scala.ScalaClass;
 import org.spotify4j.generation.scala.ScalaField;
+import org.spotify4j.generation.scala.types.ReferenceType;
 import org.spotify4j.generation.scala.types.ScalaTypes;
 import org.spotify4j.generation.writing.BasicLineWriter;
 import org.spotify4j.generation.writing.LineWriter;
@@ -27,15 +28,13 @@ public class Main {
 
     public static void main(String[] args) throws URISyntaxException, IOException {
         final Path objectModelsRoot = Paths.get(Main.class.getClassLoader().getResource("").toURI().resolve("../../../../spotify-web-api/specifications/raml/libraries/objectModels"));
-        final Path typesRoot = Paths.get(Main.class.getClassLoader().getResource("").toURI().resolve("../../../../spotify-web-api/specifications/raml/types"));
+//        final Path typesRoot = Paths.get(Main.class.getClassLoader().getResource("").toURI().resolve("../../../../spotify-web-api/specifications/raml/types"));
         final Path output = Paths.get(Main.class.getClassLoader().getResource("").toURI().resolve("../../../../models/src/main/scala/org/spotify4s/models"));
         Files.createDirectories(output);
-        Set<Path> ignored = Stream.concat(
-                Stream.of("objects.raml", "_page.raml", "_base_page.raml", "_cursor_page.raml", "_external_id.raml", "_external_url.raml").map(objectModelsRoot::resolve),
-                Stream.of("types.raml").map(typesRoot::resolve)
-        ).collect(Collectors.toSet());
+        Set<Path> ignored = Stream.of("objects.raml", "_page.raml", "_base_page.raml", "_cursor_page.raml", "_external_id.raml", "_external_url.raml").map(objectModelsRoot::resolve)
+                .collect(Collectors.toSet());
 
-        final List<RamlFile> ramlFiles = Stream.concat(Files.list(objectModelsRoot), Files.list(typesRoot))
+        final List<RamlFile> ramlFiles = Files.list(objectModelsRoot)
                 .filter(f -> !ignored.contains(f)).map(f -> {
                     try {
                         return RamlFile.parse(f);
@@ -59,6 +58,11 @@ public class Main {
                 System.out.println("generating " + next.fileName);
                 final ScalaClass scalaClass = next
                         .withPropertyNameOverride("type", "`type`")
+                        .withTypeOverride(new ReferenceType("SpotifyId", "org.spotify4s.models"), ScalaTypes.String)
+                        .withTypeOverride(new ReferenceType("SpotifyCategoryId", "org.spotify4s.models"), ScalaTypes.String)
+                        .withTypeOverride(new ReferenceType("SpotifyUserId", "org.spotify4s.models"), ScalaTypes.String)
+                        .withTypeOverride(new ReferenceType("SpotifyUri", "org.spotify4s.models"), ScalaTypes.String)
+                        .withTypeOverride(new ReferenceType("SpotifyUrl", "org.spotify4s.models"), ScalaTypes.String)
                         .toClass(packagePath, classPath);
 
                 classPath.put(scalaClass.getName(), scalaClass);

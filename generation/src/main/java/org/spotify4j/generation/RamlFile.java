@@ -22,6 +22,7 @@ public class RamlFile {
     private Map<Object, Object> properties;
     public final String pattern;
     private Map<String, String> propertyNameOverrides;
+    private Map<Type, Type> typeOverrides;
 
     public static final Yaml YAML = new Yaml();
 
@@ -43,6 +44,7 @@ public class RamlFile {
         this.properties = properties;
         this.pattern = pattern;
         this.propertyNameOverrides = new HashMap<>();
+        this.typeOverrides = new HashMap<>();
     }
 
     public static RamlFile parse(Path path) throws FileNotFoundException {
@@ -100,6 +102,10 @@ public class RamlFile {
             } else {
                 type = new ReferenceType(baseTypeName, packageName);
             }
+        }
+
+        if (typeOverrides.containsKey(type)) {
+            type = typeOverrides.get(type);
         }
 
         if (typeName.endsWith("[]")) {
@@ -170,7 +176,7 @@ public class RamlFile {
                 new GenericType("Decoder", "io.circe", clazz.getType())).
                 withAssignment(
                         clazz.getVariables().stream().map(var ->
-                                "Decoder.instance(_.get[" + var.getType().getDeclaration() + "](\"" + Util.camelCaseToSnake(var.getName().replace("`","")) + "\"))"
+                                "Decoder.instance(_.get[" + var.getType().getDeclaration() + "](\"" + Util.camelCaseToSnake(var.getName().replace("`", "")) + "\"))"
                         ).collect(Collectors.joining(" |@| \n", "(", ").map(" + clazz.getType().getDeclaration() + ".apply)")))
         );
     }
@@ -185,12 +191,12 @@ public class RamlFile {
         body.add("Encoder.instance(" + lowerClassClassName + " =>");
         body.add("$(io.circe).Json.obj(");
         body.add(clazz.getVariables().stream().map(scalaField ->
-            String.format("\"%s\" -> Encoder[%s].apply(%s.%s)",
-                    Util.camelCaseToSnake(scalaField.getName().replace("`", "")),
-                    scalaField.getType().getDeclaration(),
-                    lowerClassClassName,
-                    scalaField.getName()
-            )
+                String.format("\"%s\" -> Encoder[%s].apply(%s.%s)",
+                        Util.camelCaseToSnake(scalaField.getName().replace("`", "")),
+                        scalaField.getType().getDeclaration(),
+                        lowerClassClassName,
+                        scalaField.getName()
+                )
         ).collect(Collectors.joining(",")));
         body.add("))");
 
@@ -235,6 +241,11 @@ public class RamlFile {
 
     public RamlFile withPropertyNameOverride(String name, String alternative) {
         this.propertyNameOverrides.put(name, alternative);
+        return this;
+    }
+
+    public RamlFile withTypeOverride(Type type, Type overriden) {
+        this.typeOverrides.put(type, overriden);
         return this;
     }
 }

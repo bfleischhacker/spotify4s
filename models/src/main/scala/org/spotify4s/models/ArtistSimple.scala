@@ -12,27 +12,22 @@ import io.circe.{Decoder, Encoder, Json}
   * @param `type` The object type: "artist"
   * @param uri
   **/
-case class ArtistSimple(externalUrls: ExternalUrl,
-                        href: String,
-                        id: SpotifyId,
-                        name: String,
-                        `type`: String,
-                        uri: SpotifyUri)
+case class ArtistSimple(externalUrls: ExternalUrl, href: String, id: String, name: String, `type`: String, uri: String)
 
 object ArtistSimple {
   implicit val decoder: Decoder[ArtistSimple] = (Decoder.instance(_.get[ExternalUrl]("external_urls")) |@| Decoder
-    .instance(_.get[String]("href")) |@| Decoder.instance(_.get[SpotifyId]("id")) |@| Decoder
+    .instance(_.get[String]("href")) |@| Decoder.instance(_.get[String]("id")) |@| Decoder
     .instance(_.get[String]("name")) |@| Decoder.instance(_.get[String]("type")) |@| Decoder
-    .instance(_.get[SpotifyUri]("uri"))).map(ArtistSimple.apply)
+    .instance(_.get[String]("uri"))).map(ArtistSimple.apply)
 
   implicit val encoder: Encoder[ArtistSimple] = Encoder
     .instance(artistSimple => Json
       .obj("external_urls" -> Encoder[ExternalUrl].apply(artistSimple.externalUrls),
         "href" -> Encoder[String].apply(artistSimple.href),
-        "id" -> Encoder[SpotifyId].apply(artistSimple.id),
+        "id" -> Encoder[String].apply(artistSimple.id),
         "name" -> Encoder[String].apply(artistSimple.name),
         "type" -> Encoder[String].apply(artistSimple.`type`),
-        "uri" -> Encoder[SpotifyUri].apply(artistSimple.uri)))
+        "uri" -> Encoder[String].apply(artistSimple.uri)))
 
 
 }

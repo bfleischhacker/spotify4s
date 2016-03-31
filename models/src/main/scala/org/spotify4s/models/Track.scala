@@ -31,14 +31,14 @@ case class Track(artists: List[ArtistSimple],
                  explicit: Boolean,
                  externalUrls: ExternalUrl,
                  href: String,
-                 id: SpotifyId,
+                 id: String,
                  isPlayable: Option[Boolean],
                  linkedFrom: Option[TrackLink],
                  name: String,
                  previewUrl: Option[String],
                  trackNumber: Int,
                  `type`: String,
-                 uri: SpotifyUri,
+                 uri: String,
                  album: AlbumSimple,
                  externalIds: ExternalId,
                  popularity: Int)
@@ -48,10 +48,10 @@ object Track {
     .instance(_.get[List[String]]("available_markets")) |@| Decoder.instance(_.get[Int]("disc_number")) |@| Decoder
     .instance(_.get[Int]("duration_ms")) |@| Decoder.instance(_.get[Boolean]("explicit")) |@| Decoder
     .instance(_.get[ExternalUrl]("external_urls")) |@| Decoder.instance(_.get[String]("href")) |@| Decoder
-    .instance(_.get[SpotifyId]("id")) |@| Decoder.instance(_.get[Option[Boolean]]("is_playable")) |@| Decoder
+    .instance(_.get[String]("id")) |@| Decoder.instance(_.get[Option[Boolean]]("is_playable")) |@| Decoder
     .instance(_.get[Option[TrackLink]]("linked_from")) |@| Decoder.instance(_.get[String]("name")) |@| Decoder
     .instance(_.get[Option[String]]("preview_url")) |@| Decoder.instance(_.get[Int]("track_number")) |@| Decoder
-    .instance(_.get[String]("type")) |@| Decoder.instance(_.get[SpotifyUri]("uri")) |@| Decoder
+    .instance(_.get[String]("type")) |@| Decoder.instance(_.get[String]("uri")) |@| Decoder
     .instance(_.get[AlbumSimple]("album")) |@| Decoder.instance(_.get[ExternalId]("external_ids")) |@| Decoder
     .instance(_.get[Int]("popularity"))).map(Track.apply)
 
@@ -64,14 +64,14 @@ object Track {
         "explicit" -> Encoder[Boolean].apply(track.explicit),
         "external_urls" -> Encoder[ExternalUrl].apply(track.externalUrls),
         "href" -> Encoder[String].apply(track.href),
-        "id" -> Encoder[SpotifyId].apply(track.id),
+        "id" -> Encoder[String].apply(track.id),
         "is_playable" -> Encoder[Option[Boolean]].apply(track.isPlayable),
         "linked_from" -> Encoder[Option[TrackLink]].apply(track.linkedFrom),
         "name" -> Encoder[String].apply(track.name),
         "preview_url" -> Encoder[Option[String]].apply(track.previewUrl),
         "track_number" -> Encoder[Int].apply(track.trackNumber),
         "type" -> Encoder[String].apply(track.`type`),
-        "uri" -> Encoder[SpotifyUri].apply(track.uri),
+        "uri" -> Encoder[String].apply(track.uri),
         "album" -> Encoder[AlbumSimple].apply(track.album),
         "external_ids" -> Encoder[ExternalId].apply(track.externalIds),
         "popularity" -> Encoder[Int].apply(track.popularity)))

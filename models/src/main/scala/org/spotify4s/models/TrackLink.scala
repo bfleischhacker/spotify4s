@@ -11,20 +11,20 @@ import io.circe.{Decoder, Encoder, Json}
   * @param `type`       The object type: "track".
   * @param uri
   **/
-case class TrackLink(externalUrls: ExternalUrl, href: String, id: SpotifyId, `type`: String, uri: SpotifyUri)
+case class TrackLink(externalUrls: ExternalUrl, href: String, id: String, `type`: String, uri: String)
 
 object TrackLink {
   implicit val decoder: Decoder[TrackLink] = (Decoder.instance(_.get[ExternalUrl]("external_urls")) |@| Decoder
-    .instance(_.get[String]("href")) |@| Decoder.instance(_.get[SpotifyId]("id")) |@| Decoder
-    .instance(_.get[String]("type")) |@| Decoder.instance(_.get[SpotifyUri]("uri"))).map(TrackLink.apply)
+    .instance(_.get[String]("href")) |@| Decoder.instance(_.get[String]("id")) |@| Decoder
+    .instance(_.get[String]("type")) |@| Decoder.instance(_.get[String]("uri"))).map(TrackLink.apply)
 
   implicit val encoder: Encoder[TrackLink] = Encoder
     .instance(trackLink => Json
       .obj("external_urls" -> Encoder[ExternalUrl].apply(trackLink.externalUrls),
         "href" -> Encoder[String].apply(trackLink.href),
-        "id" -> Encoder[SpotifyId].apply(trackLink.id),
+        "id" -> Encoder[String].apply(trackLink.id),
         "type" -> Encoder[String].apply(trackLink.`type`),
-        "uri" -> Encoder[SpotifyUri].apply(trackLink.uri)))
+        "uri" -> Encoder[String].apply(trackLink.uri)))
 
 
 }

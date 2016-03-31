@@ -28,24 +28,24 @@ case class TrackSimple(artists: List[ArtistSimple],
                        explicit: Boolean,
                        externalUrls: ExternalUrl,
                        href: String,
-                       id: SpotifyId,
+                       id: String,
                        isPlayable: Option[Boolean],
                        linkedFrom: Option[TrackLink],
                        name: String,
                        previewUrl: Option[String],
                        trackNumber: Int,
                        `type`: String,
-                       uri: SpotifyUri)
+                       uri: String)
 
 object TrackSimple {
   implicit val decoder: Decoder[TrackSimple] = (Decoder.instance(_.get[List[ArtistSimple]]("artists")) |@| Decoder
     .instance(_.get[List[String]]("available_markets")) |@| Decoder.instance(_.get[Int]("disc_number")) |@| Decoder
     .instance(_.get[Int]("duration_ms")) |@| Decoder.instance(_.get[Boolean]("explicit")) |@| Decoder
     .instance(_.get[ExternalUrl]("external_urls")) |@| Decoder.instance(_.get[String]("href")) |@| Decoder
-    .instance(_.get[SpotifyId]("id")) |@| Decoder.instance(_.get[Option[Boolean]]("is_playable")) |@| Decoder
+    .instance(_.get[String]("id")) |@| Decoder.instance(_.get[Option[Boolean]]("is_playable")) |@| Decoder
     .instance(_.get[Option[TrackLink]]("linked_from")) |@| Decoder.instance(_.get[String]("name")) |@| Decoder
     .instance(_.get[Option[String]]("preview_url")) |@| Decoder.instance(_.get[Int]("track_number")) |@| Decoder
-    .instance(_.get[String]("type")) |@| Decoder.instance(_.get[SpotifyUri]("uri"))).map(TrackSimple.apply)
+    .instance(_.get[String]("type")) |@| Decoder.instance(_.get[String]("uri"))).map(TrackSimple.apply)
 
   implicit val encoder: Encoder[TrackSimple] = Encoder
     .instance(trackSimple => Json
@@ -56,14 +56,14 @@ object TrackSimple {
         "explicit" -> Encoder[Boolean].apply(trackSimple.explicit),
         "external_urls" -> Encoder[ExternalUrl].apply(trackSimple.externalUrls),
         "href" -> Encoder[String].apply(trackSimple.href),
-        "id" -> Encoder[SpotifyId].apply(trackSimple.id),
+        "id" -> Encoder[String].apply(trackSimple.id),
         "is_playable" -> Encoder[Option[Boolean]].apply(trackSimple.isPlayable),
         "linked_from" -> Encoder[Option[TrackLink]].apply(trackSimple.linkedFrom),
         "name" -> Encoder[String].apply(trackSimple.name),
         "preview_url" -> Encoder[Option[String]].apply(trackSimple.previewUrl),
         "track_number" -> Encoder[Int].apply(trackSimple.trackNumber),
         "type" -> Encoder[String].apply(trackSimple.`type`),
-        "uri" -> Encoder[SpotifyUri].apply(trackSimple.uri)))
+        "uri" -> Encoder[String].apply(trackSimple.uri)))
 
 
 }

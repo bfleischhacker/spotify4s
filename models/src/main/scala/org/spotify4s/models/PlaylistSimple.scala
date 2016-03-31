@@ -21,7 +21,7 @@ import io.circe.{Decoder, Encoder, Json}
 case class PlaylistSimple(collaborative: Boolean,
                           externalUrls: ExternalUrl,
                           href: String,
-                          id: SpotifyId,
+                          id: String,
                           images: List[Image],
                           name: String,
                           owner: UserPublic,
@@ -29,23 +29,23 @@ case class PlaylistSimple(collaborative: Boolean,
                           snapshotId: String,
                           tracks: PageReference,
                           `type`: String,
-                          uri: SpotifyUri)
+                          uri: String)
 
 object PlaylistSimple {
   implicit val decoder: Decoder[PlaylistSimple] = (Decoder.instance(_.get[Boolean]("collaborative")) |@| Decoder
     .instance(_.get[ExternalUrl]("external_urls")) |@| Decoder.instance(_.get[String]("href")) |@| Decoder
-    .instance(_.get[SpotifyId]("id")) |@| Decoder.instance(_.get[List[Image]]("images")) |@| Decoder
+    .instance(_.get[String]("id")) |@| Decoder.instance(_.get[List[Image]]("images")) |@| Decoder
     .instance(_.get[String]("name")) |@| Decoder.instance(_.get[UserPublic]("owner")) |@| Decoder
     .instance(_.get[Option[Boolean]]("public")) |@| Decoder.instance(_.get[String]("snapshot_id")) |@| Decoder
     .instance(_.get[PageReference]("tracks")) |@| Decoder.instance(_.get[String]("type")) |@| Decoder
-    .instance(_.get[SpotifyUri]("uri"))).map(PlaylistSimple.apply)
+    .instance(_.get[String]("uri"))).map(PlaylistSimple.apply)
 
   implicit val encoder: Encoder[PlaylistSimple] = Encoder
     .instance(playlistSimple => Json
       .obj("collaborative" -> Encoder[Boolean].apply(playlistSimple.collaborative),
         "external_urls" -> Encoder[ExternalUrl].apply(playlistSimple.externalUrls),
         "href" -> Encoder[String].apply(playlistSimple.href),
-        "id" -> Encoder[SpotifyId].apply(playlistSimple.id),
+        "id" -> Encoder[String].apply(playlistSimple.id),
         "images" -> Encoder[List[Image]].apply(playlistSimple.images),
         "name" -> Encoder[String].apply(playlistSimple.name),
         "owner" -> Encoder[UserPublic].apply(playlistSimple.owner),
@@ -53,7 +53,7 @@ object PlaylistSimple {
         "snapshot_id" -> Encoder[String].apply(playlistSimple.snapshotId),
         "tracks" -> Encoder[PageReference].apply(playlistSimple.tracks),
         "type" -> Encoder[String].apply(playlistSimple.`type`),
-        "uri" -> Encoder[SpotifyUri].apply(playlistSimple.uri)))
+        "uri" -> Encoder[String].apply(playlistSimple.uri)))
 
 
 }

@@ -23,10 +23,10 @@ case class UserPrivate(displayName: Option[String],
                        externalUrls: ExternalUrl,
                        followers: Option[Followers],
                        href: String,
-                       id: SpotifyUserId,
+                       id: String,
                        images: Option[List[Image]],
                        `type`: String,
-                       uri: SpotifyUri,
+                       uri: String,
                        birthday: String,
                        country: String,
                        email: String,
@@ -36,8 +36,8 @@ object UserPrivate {
   implicit val decoder: Decoder[UserPrivate] = (Decoder.instance(_.get[Option[String]]("display_name")) |@| Decoder
     .instance(_.get[ExternalUrl]("external_urls")) |@| Decoder
     .instance(_.get[Option[Followers]]("followers")) |@| Decoder.instance(_.get[String]("href")) |@| Decoder
-    .instance(_.get[SpotifyUserId]("id")) |@| Decoder.instance(_.get[Option[List[Image]]]("images")) |@| Decoder
-    .instance(_.get[String]("type")) |@| Decoder.instance(_.get[SpotifyUri]("uri")) |@| Decoder
+    .instance(_.get[String]("id")) |@| Decoder.instance(_.get[Option[List[Image]]]("images")) |@| Decoder
+    .instance(_.get[String]("type")) |@| Decoder.instance(_.get[String]("uri")) |@| Decoder
     .instance(_.get[String]("birthday")) |@| Decoder.instance(_.get[String]("country")) |@| Decoder
     .instance(_.get[String]("email")) |@| Decoder.instance(_.get[UserPrivate.Product]("product")))
     .map(UserPrivate.apply)
@@ -48,10 +48,10 @@ object UserPrivate {
         "external_urls" -> Encoder[ExternalUrl].apply(userPrivate.externalUrls),
         "followers" -> Encoder[Option[Followers]].apply(userPrivate.followers),
         "href" -> Encoder[String].apply(userPrivate.href),
-        "id" -> Encoder[SpotifyUserId].apply(userPrivate.id),
+        "id" -> Encoder[String].apply(userPrivate.id),
         "images" -> Encoder[Option[List[Image]]].apply(userPrivate.images),
         "type" -> Encoder[String].apply(userPrivate.`type`),
-        "uri" -> Encoder[SpotifyUri].apply(userPrivate.uri),
+        "uri" -> Encoder[String].apply(userPrivate.uri),
         "birthday" -> Encoder[String].apply(userPrivate.birthday),
         "country" -> Encoder[String].apply(userPrivate.country),
         "email" -> Encoder[String].apply(userPrivate.email),

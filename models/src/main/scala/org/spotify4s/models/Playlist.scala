@@ -27,12 +27,12 @@ case class Playlist(collaborative: Boolean,
                     images: List[Image],
                     name: String,
                     owner: UserPublic,
-                    public: Boolean,
+                    public: Option[Boolean],
                     snapshotId: String,
                     tracks: PageReference,
                     `type`: String,
                     uri: SpotifyUri,
-                    description: String,
+                    description: Option[String],
                     followers: Followers)
 
 object Playlist {
@@ -40,9 +40,9 @@ object Playlist {
     .instance(_.get[ExternalUrl]("external_urls")) |@| Decoder.instance(_.get[String]("href")) |@| Decoder
     .instance(_.get[SpotifyId]("id")) |@| Decoder.instance(_.get[List[Image]]("images")) |@| Decoder
     .instance(_.get[String]("name")) |@| Decoder.instance(_.get[UserPublic]("owner")) |@| Decoder
-    .instance(_.get[Boolean]("public")) |@| Decoder.instance(_.get[String]("snapshot_id")) |@| Decoder
+    .instance(_.get[Option[Boolean]]("public")) |@| Decoder.instance(_.get[String]("snapshot_id")) |@| Decoder
     .instance(_.get[PageReference]("tracks")) |@| Decoder.instance(_.get[String]("type")) |@| Decoder
-    .instance(_.get[SpotifyUri]("uri")) |@| Decoder.instance(_.get[String]("description")) |@| Decoder
+    .instance(_.get[SpotifyUri]("uri")) |@| Decoder.instance(_.get[Option[String]]("description")) |@| Decoder
     .instance(_.get[Followers]("followers"))).map(Playlist.apply)
 
   implicit val encoder: Encoder[Playlist] = Encoder
@@ -54,12 +54,12 @@ object Playlist {
         "images" -> Encoder[List[Image]].apply(playlist.images),
         "name" -> Encoder[String].apply(playlist.name),
         "owner" -> Encoder[UserPublic].apply(playlist.owner),
-        "public" -> Encoder[Boolean].apply(playlist.public),
+        "public" -> Encoder[Option[Boolean]].apply(playlist.public),
         "snapshot_id" -> Encoder[String].apply(playlist.snapshotId),
         "tracks" -> Encoder[PageReference].apply(playlist.tracks),
         "type" -> Encoder[String].apply(playlist.`type`),
         "uri" -> Encoder[SpotifyUri].apply(playlist.uri),
-        "description" -> Encoder[String].apply(playlist.description),
+        "description" -> Encoder[Option[String]].apply(playlist.description),
         "followers" -> Encoder[Followers].apply(playlist.followers)))
 
 

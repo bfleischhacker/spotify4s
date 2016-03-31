@@ -25,7 +25,7 @@ case class PlaylistSimple(collaborative: Boolean,
                           images: List[Image],
                           name: String,
                           owner: UserPublic,
-                          public: Boolean,
+                          public: Option[Boolean],
                           snapshotId: String,
                           tracks: PageReference,
                           `type`: String,
@@ -36,7 +36,7 @@ object PlaylistSimple {
     .instance(_.get[ExternalUrl]("external_urls")) |@| Decoder.instance(_.get[String]("href")) |@| Decoder
     .instance(_.get[SpotifyId]("id")) |@| Decoder.instance(_.get[List[Image]]("images")) |@| Decoder
     .instance(_.get[String]("name")) |@| Decoder.instance(_.get[UserPublic]("owner")) |@| Decoder
-    .instance(_.get[Boolean]("public")) |@| Decoder.instance(_.get[String]("snapshot_id")) |@| Decoder
+    .instance(_.get[Option[Boolean]]("public")) |@| Decoder.instance(_.get[String]("snapshot_id")) |@| Decoder
     .instance(_.get[PageReference]("tracks")) |@| Decoder.instance(_.get[String]("type")) |@| Decoder
     .instance(_.get[SpotifyUri]("uri"))).map(PlaylistSimple.apply)
 
@@ -49,7 +49,7 @@ object PlaylistSimple {
         "images" -> Encoder[List[Image]].apply(playlistSimple.images),
         "name" -> Encoder[String].apply(playlistSimple.name),
         "owner" -> Encoder[UserPublic].apply(playlistSimple.owner),
-        "public" -> Encoder[Boolean].apply(playlistSimple.public),
+        "public" -> Encoder[Option[Boolean]].apply(playlistSimple.public),
         "snapshot_id" -> Encoder[String].apply(playlistSimple.snapshotId),
         "tracks" -> Encoder[PageReference].apply(playlistSimple.tracks),
         "type" -> Encoder[String].apply(playlistSimple.`type`),

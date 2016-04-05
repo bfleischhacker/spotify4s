@@ -2,26 +2,27 @@ package org.spotify4s
 
 import io.circe.Decoder
 import org.spotify4s.models.{AccessTokenResponse, RefreshTokenResponse}
-import org.spotify4s.resources.AbstractAccountResource
+import org.spotify4s.resources.AccountResource
 
 import scala.concurrent.{ExecutionContext, Future}
 import scalaj.http.{Http, HttpRequest}
 
-case class SpotifyAccounts(clientId: String,
-                      clientSecret: String)
-                     (implicit executionContext: ExecutionContext) extends AbstractAccountResource {
+case class SpotifyAccountsClient(clientToken: String,
+                                 clientSecret: String)
+                                (implicit executionContext: ExecutionContext) extends AccountResource {
+
   override val accounts: Accounts = new Accounts {
 
     private val AccountsHost = "https://accounts.spotify.com"
 
     def execute[T: Decoder](request: HttpRequest): Future[Either[SpotifyError, T]] = {
-      Future(HttpUtil.execute(request))
+      Future(HttpUtil.execute(request.auth(clientToken, clientSecret)))
+
     }
 
     override def requestTokens(code: String,
                                redirect_uri: String): Future[Either[SpotifyError, AccessTokenResponse]] = {
       execute[AccessTokenResponse](Http(s"$AccountsHost/api/token")
-        .auth(clientId, clientSecret)
         .postForm(Seq(
           "grant_type" -> "authorization_code",
           "code" -> code,
@@ -30,7 +31,6 @@ case class SpotifyAccounts(clientId: String,
 
     override def refreshToken(refreshToken: String): Future[Either[SpotifyError, RefreshTokenResponse]] = {
       execute[RefreshTokenResponse](Http(s"$AccountsHost/api/token")
-        .auth(clientId, clientSecret)
         .postForm(Seq(
           "grant_type" -> "refresh_token",
           "refresh_token" -> refreshToken)))

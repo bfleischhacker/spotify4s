@@ -27,26 +27,19 @@ lazy val root = (project in file(".")).
     name := "spotify4s"
   )
 
-lazy val models = (project in file("models")).
-  settings(commonSettings: _*).
-  settings(
-    name := "spotify4s-models",
-    libraryDependencies ++= Seq(scalaTest, cats) ++ circe
-  )
-
 lazy val core = (project in file("core")).
   settings(commonSettings: _*).
   settings(
     name := "spotify4s-core",
-    libraryDependencies ++= Seq(scalaTest) ++ circe
-  ).dependsOn(models)
+    libraryDependencies ++= Seq(scalaTest, cats) ++ circe
+  )
 
 lazy val coreScalaj = (project in file("scalaj")).
   settings(commonSettings: _*).
   settings(
     name := "spotify4s-scalaj",
     libraryDependencies ++= Seq(scalaTest, cats, scalaj) ++ circe
-  ).dependsOn(models, core)
+  ).dependsOn(core)
 
 lazy val generation = (project in file("generation")).
   settings(commonSettings: _*).

@@ -5,10 +5,7 @@ import org.spotify4s.models.{AccessTokenResponse, RefreshTokenResponse}
 
 import scala.concurrent.Future
 
-/**
-  * Created by bfly2000 on 3/29/16.
-  */
-trait AbstractAccountResource {
+trait AccountResource {
   val accounts: Accounts
 
   trait Accounts {
